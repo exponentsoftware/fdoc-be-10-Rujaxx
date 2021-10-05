@@ -7,7 +7,13 @@ const ErrorResponse = require('../utils/errorResponse');
 // @route     GET /api/v1/tasks
 // @access    Private
 exports.getTasks = asyncHandler(async(req,res,next) => {
-    const tasks = await Task.find()
+    let tasks
+    if(req.user.role !== "admin"){
+      tasks = await Task.find({user : req.user.id})
+    }else{
+      tasks = await Task.find()
+    }
+    
 
     return res.status(200).json({
       success: true,  
@@ -38,7 +44,15 @@ exports.getTask = asyncHandler(async(req,res,next) => {
 // @access    Private
 exports.addTask = asyncHandler(async(req,res,next) => {
     req.body.user = req.user.id;
-    const task = await Task.create(req.body);
+    
+    let tasks = await Task.find({user : req.user.id})
+    if(tasks.length === 10 && req.user.role !== "admin"){
+      return next(
+        new ErrorResponse(`You have reached your limit Subscribe for more`, 404)
+      );
+    }
+
+    const task = await Task.create(req.body)
 
     res.status(200).json({
         success : true,
@@ -51,7 +65,6 @@ exports.addTask = asyncHandler(async(req,res,next) => {
 // @access    Private
 exports.updateTask = asyncHandler(async(req,res,next) => {
     let task = await Task.findById(req.params.id);
-    console.log(req.user.id)
 
     if (!task) {
         return next(
