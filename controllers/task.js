@@ -46,7 +46,7 @@ exports.addTask = asyncHandler(async(req,res,next) => {
     req.body.user = req.user.id;
     
     let tasks = await Task.find({user : req.user.id})
-    if(tasks.length === 10 && req.user.role !== "admin"){
+    if(tasks.length === 10 && req.user.role !== "admin" && req.user.role !== "paid" ){
       return next(
         new ErrorResponse(`You have reached your limit Subscribe for more`, 404)
       );

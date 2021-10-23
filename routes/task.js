@@ -26,8 +26,8 @@ router.use('/:taskId/rating', ratingsRouter);
 
 router
     .route('/')
-    .get(protect,authorize('user','admin'),getTasks)
-    .get(protect,authorize('user','admin'),getCompletedTasks)
+    .get(protect,authorize('user','admin','paid'),getTasks)
+    .get(protect,authorize('user','admin','paid'),getCompletedTasks)
     .post(protect,addTask)
 
 router
